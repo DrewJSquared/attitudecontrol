@@ -216,8 +216,8 @@ function sendUniverse(universe) {
 // DEBUG FPS - console log some info about the current FPS and queues
 if (DEBUG_FPS) {
 	setInterval(() => {
-		if (dmxIntervalActive) {
-			log.info('Status', 'FPS: ' + framesPerSecond + '  Q0: ' + queue[0].length + '  Q1: ' + queue[1].length);
+		if (DEBUG_FPS && dmxIntervalActive) {
+			log.info('DMX Status', 'FPS: ' + framesPerSecond + '  Q0: ' + queue[0].length + '  Q1: ' + queue[1].length);
 		}
 		framesPerSecond = 0;
 	}, 1000);
@@ -230,7 +230,8 @@ if (DEBUG_FPS) {
 // ==================== MODULE EXPORT FUNCTIONS ====================
 
 module.exports = {
-	initialize: function () {
+	initialize: function (debug_fps) {
+		DEBUG_FPS = debug_fps;
 		initialize();
 	},
 

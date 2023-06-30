@@ -2,13 +2,15 @@
 // primary JS app for Attitude Control software
 // copyright 2023 Drew Shipps, J Squared Systems
 
+var VERSION = 'v0.0.1'
 
 // import log
 var log = require('npmlog');
 
 
 
-log.info('Status', 'Initializing Attitude Control device...');
+log.info('Init', 'Attitude Control Device Firmware ' + VERSION);
+log.info('Init', 'Copyright 2023 Drew Shipps, J Squared Systems');
 
 
 
@@ -18,7 +20,7 @@ log.info('Status', 'Initializing Attitude Control device...');
 // INIT APP
 const AttitudeDMX = require('./AttitudeDMX');
 
-AttitudeDMX.initialize();
+AttitudeDMX.initialize(false);
 AttitudeDMX.startDMX();
 
 
