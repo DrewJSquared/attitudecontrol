@@ -151,6 +151,10 @@ function parse(p, data) {
 			} else {
 				write(p, queue[p].shift());
 			}
+
+			if (queue[p].length > 20) {
+				queue[p] = [];
+			}
 		}
 	} else {
 		if (input.includes('initAttitudeDMX')) {
