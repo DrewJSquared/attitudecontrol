@@ -20,7 +20,7 @@ log.info('Init', 'Copyright 2023 Drew Shipps, J Squared Systems');
 // INIT APP
 const AttitudeDMX = require('./AttitudeDMX');
 
-AttitudeDMX.initialize(false);
+AttitudeDMX.initialize(true);
 AttitudeDMX.startDMX();
 
 
