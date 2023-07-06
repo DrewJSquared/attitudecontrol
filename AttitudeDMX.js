@@ -17,7 +17,8 @@ var DEBUG_FPS = true;
 var DEBUG_INPUT = false;
 var DEBUG_OUTPUT = false;
 var RECONNECT_INTERVAL = 500;
-var DMX_INTERVAL_SPEED = 35; // best performance found at 32/laptop 36/raspi
+var DMX_INTERVAL_SPEED = 35; // best performance found at 32/laptop  36/raspi
+var LAPTOP_MODE = (process.platform == 'darwin');
 
 //  status & queues
 var initialized = [false, false];
@@ -45,9 +46,14 @@ for (var c = 0; c < 512; c++) {
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 
+var portPaths = ['/dev/ttyACM0', '/dev/ttyACM1'];
+if (LAPTOP_MODE) {
+	portPaths = ['/dev/cu.usbmodem1201', '/dev/cu.usbmodem1301'];
+}
+
 const port = [
-	new SerialPort({ path: '/dev/ttyACM0', baudRate: 115200, autoOpen: false, }),  // laptop /dev/cu.usbmodem1201
-	new SerialPort({ path: '/dev/ttyACM1', baudRate: 115200, autoOpen: false, }),  // laptop /dev/cu.usbmodem1301
+	new SerialPort({ path: portPaths[0], baudRate: 115200, autoOpen: false, }),
+	new SerialPort({ path: portPaths[1], baudRate: 115200, autoOpen: false, }),
 ];
 
 const parser = [
