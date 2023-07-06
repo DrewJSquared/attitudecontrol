@@ -3,42 +3,29 @@
 // copyright 2023 Drew Shipps, J Squared Systems
 
 
-const VERSION = 'v0.0.1'
-
-
-// Options
-const LAPTOP_MODE = (process.platform == 'darwin');
-
 
 // Variables
 var DEVICE_ID = 1;
 var SERIALNUMBER = 'AC-0010001';
+const LAPTOP_MODE = (process.platform == 'darwin');
+var config;
+
 
 
 // Import
-var log = require('npmlog');
-var fs = require('fs');
+const log = require('npmlog');
+const fs = require('fs');
+const https = require("https");
 
 
 
 // Initialize
-log.info('Init', 'Attitude Control Device Firmware ' + VERSION);
-log.info('Init', 'Copyright 2023 Drew Shipps, J Squared Systems');
+log.info('INIT', 'Attitude Control Device Firmware');
+log.info('INIT', 'Copyright 2023 Drew Shipps, J Squared Systems');
 
 
 
-// Load Device ID from id.json
-function loadDeviceID() {
-	var path = '../id.json';
-	if (LAPTOP_MODE) { path = 'id_template.json'; }
-	let rawdata = fs.readFileSync(path);
-	let data = JSON.parse(rawdata);
-
-	DEVICE_ID = data.device_id;
-	SERIALNUMBER = data.serialnumber;
-
-	log.info('INIT', 'Device ID: ' + DEVICE_ID + ', Serial Number: ' + SERIALNUMBER);
-}
+// Load Device ID & Serial Number from JSON
 loadDeviceID();
 
 
@@ -56,6 +43,17 @@ for (var i = 0; i < 512; i++) {
 	AttitudeDMX.set(3, i, 0);
 	AttitudeDMX.set(4, i, 0);
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -98,25 +96,49 @@ setInterval(function () {
 
 
 
-const https = require("https");
+
+// setInterval(function () {
+// 	https.get(`https://attitude.lighting/api/devices/1/data`, resp => {
+// 		let data = "";
+
+// 		// A chunk of data has been recieved.
+// 		resp.on("data", chunk => {
+// 			data += chunk;
+// 		});
+
+// 		// The whole response has been received. Print out the result.
+// 		resp.on("end", () => {
+// 			parseNewHTTPData(data);
+// 		});
+// 	})
+// 	.on("error", err => {
+// 		console.log("Error: " + err.message);
+// 	});
+// }, 500);
+
+
+
+
+
+
+// function parseNewHTTPData(data) {
+// 	log.http('SERVER', 'Received new data from server, processing now');
+// 	parsedData = JSON.parse(data);
+// 	// console.log(parsedData);
+
+// 	// console.log(parsedData.patch);
+// }
+
+
+
+
+// let rawdata = fs.readFileSync('config.json');
+// let config = JSON.parse(rawdata);
+// console.log(config);
+
 
 setInterval(function () {
-	https.get(`https://attitude.lighting/api/devices/1/data`, resp => {
-		let data = "";
-
-		// A chunk of data has been recieved.
-		resp.on("data", chunk => {
-			data += chunk;
-		});
-
-		// The whole response has been received. Print out the result.
-		resp.on("end", () => {
-			parseNewHTTPData(data);
-		});
-	})
-	.on("error", err => {
-		console.log("Error: " + err.message);
-	});
+	getData();
 }, 500);
 
 
@@ -124,23 +146,69 @@ setInterval(function () {
 
 
 
-function parseNewHTTPData(data) {
+
+
+
+
+
+
+// ==================== HTTPS FUNCTIONS ====================
+
+// getData - get all data or only new data from attitude.lighting server and update object
+function getData(allData = false) {
+	var url = 'https://attitude.lighting/api/devices/';
+	var type = '/newdata';
+	if (allData) {
+		type = '/data';
+	}
+
+	https.get(url + DEVICE_ID + type, resp => {
+		let data = "";
+
+		// process each chunk
+		resp.on("data", chunk => {
+			data += chunk;
+		});
+
+		// finished, do something with result
+		resp.on("end", () => {
+			parseNewHTTPSData(data);
+		});
+	}).on("error", err => {
+		log.error('HTTPS', 'Error: ' + err.message);
+	});
+}
+
+
+// parseNewHTTPSData - process new data downloaded from server
+function parseNewHTTPSData(data) {
 	log.http('SERVER', 'Received new data from server, processing now');
 	parsedData = JSON.parse(data);
-	// console.log(parsedData);
+	config = Object.assign({}, config, parsedData);
 
-	// console.log(parsedData.patch);
+	console.log(config);
 }
 
 
 
 
-let rawdata = fs.readFileSync('config.json');
-let config = JSON.parse(rawdata);
-console.log(config);
 
 
 
 
 
 
+// ==================== JSON FUNCTIONS ====================
+
+// loadDeviceID - load Device ID from id.json
+function loadDeviceID() {
+	var path = '../id.json';
+	if (LAPTOP_MODE) { path = 'id_template.json'; }
+	let rawdata = fs.readFileSync(path);
+	let data = JSON.parse(rawdata);
+
+	DEVICE_ID = data.device_id;
+	SERIALNUMBER = data.serialnumber;
+
+	log.info('INIT', 'Device ID: ' + DEVICE_ID + ', Serial Number: ' + SERIALNUMBER);
+}
