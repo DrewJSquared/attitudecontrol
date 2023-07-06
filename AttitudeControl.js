@@ -4,39 +4,42 @@
 
 
 
-// Variables
-var DEVICE_ID = 1;
-var SERIALNUMBER = 'AC-0010001';
+// ==================== VARIABLES ====================
+var DEVICE_ID = 0;
+var SERIALNUMBER = 'AC-00100XX';
 const LAPTOP_MODE = (process.platform == 'darwin');
-var config;
+const SERVER_PING_INTERVAL = 1000;
+var config = {};
 
 
 
-// Import
+
+// ==================== IMPORT ====================
 const log = require('npmlog');
 const fs = require('fs');
 const https = require("https");
 
 
 
-// Initialize
+
+// ==================== INITIALIZE ====================
 log.info('INIT', 'Attitude Control Device Firmware');
 log.info('INIT', 'Copyright 2023 Drew Shipps, J Squared Systems');
 
-
-
-// Load Device ID & Serial Number from JSON
 loadDeviceID();
+loadConfigFromJSON();
+initializeHTTPSConnection();
 
 
 
-// Init AttitudeDMX (physical DMX output)
+
+// ==================== INIT ATTITUDEDMX ====================
 const AttitudeDMX = require('./AttitudeDMX');
 
-AttitudeDMX.initialize(true);
+AttitudeDMX.initialize(false);
 AttitudeDMX.startDMX();
 
-// init to black
+// default to black
 for (var i = 0; i < 512; i++) {
 	AttitudeDMX.set(1, i, 0);
 	AttitudeDMX.set(2, i, 0);
@@ -55,6 +58,16 @@ for (var i = 0; i < 512; i++) {
 
 
 
+
+
+
+
+
+
+
+
+
+// ==================== ENGINE FUNCTIONS ====================
 
 
 
@@ -97,62 +110,15 @@ setInterval(function () {
 
 
 
-// setInterval(function () {
-// 	https.get(`https://attitude.lighting/api/devices/1/data`, resp => {
-// 		let data = "";
-
-// 		// A chunk of data has been recieved.
-// 		resp.on("data", chunk => {
-// 			data += chunk;
-// 		});
-
-// 		// The whole response has been received. Print out the result.
-// 		resp.on("end", () => {
-// 			parseNewHTTPData(data);
-// 		});
-// 	})
-// 	.on("error", err => {
-// 		console.log("Error: " + err.message);
-// 	});
-// }, 500);
-
-
-
-
-
-
-// function parseNewHTTPData(data) {
-// 	log.http('SERVER', 'Received new data from server, processing now');
-// 	parsedData = JSON.parse(data);
-// 	// console.log(parsedData);
-
-// 	// console.log(parsedData.patch);
-// }
-
-
-
-
-// let rawdata = fs.readFileSync('config.json');
-// let config = JSON.parse(rawdata);
-// console.log(config);
-
-
-setInterval(function () {
-	getData();
-}, 500);
-
-
-
-
-
-
-
-
-
-
-
-
 // ==================== HTTPS FUNCTIONS ====================
+
+// initializeHTTPSConnection - setup interval for HTTPS connection to attitude.lighting server
+function initializeHTTPSConnection() {
+	getData(true);
+	setInterval(function () {
+		getData();
+	}, SERVER_PING_INTERVAL);
+}
 
 // getData - get all data or only new data from attitude.lighting server and update object
 function getData(allData = false) {
@@ -182,11 +148,23 @@ function getData(allData = false) {
 
 // parseNewHTTPSData - process new data downloaded from server
 function parseNewHTTPSData(data) {
-	log.http('SERVER', 'Received new data from server, processing now');
-	parsedData = JSON.parse(data);
-	config = Object.assign({}, config, parsedData);
+	log.http('SERVER', 'Connected to attitude.lighting server!');
+	newData = JSON.parse(data);
 
-	console.log(config);
+	if (typeof newData.devicemeta !== 'undefined') {
+		config.devicemeta = newData.devicemeta;
+	}
+
+	if (typeof newData.patch !== 'undefined') {
+		config.patch = newData.patch;
+	}
+
+	if (typeof newData.shows !== 'undefined') {
+		config.shows = newData.shows;
+	}
+
+	saveConfigToJSON();
+	// console.log(config.patch);
 }
 
 
@@ -210,5 +188,29 @@ function loadDeviceID() {
 	DEVICE_ID = data.device_id;
 	SERIALNUMBER = data.serialnumber;
 
+	// if either does not update properly then crash the app
+	if (!Number.isInteger(DEVICE_ID) || typeof SERIALNUMBER != 'string') {
+		log.error('INIT', 'Failed to initialize Device ID and/or Serial Number.');
+		process.exit();
+	}
+
 	log.info('INIT', 'Device ID: ' + DEVICE_ID + ', Serial Number: ' + SERIALNUMBER);
+}
+
+
+// loadConfigFromJSON - load locally saved config from config.json
+function loadConfigFromJSON() {
+	let rawdata = fs.readFileSync('config.json');
+	config = JSON.parse(rawdata);
+	
+	log.info('JSON', 'Loaded locally saved config from config.json!');
+}
+
+
+// saveConfigToJSON - save config to config.json
+function saveConfigToJSON() {
+	var dataToSave = JSON.stringify(config);
+	fs.writeFile('config.json', dataToSave, 'utf8', function () {
+		// log.info('JSON', 'Successfully saved config to config.json file.');
+	});
 }
