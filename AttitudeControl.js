@@ -9,7 +9,9 @@ var DEVICE_ID = 0;
 var SERIALNUMBER = 'AC-00100XX';
 const LAPTOP_MODE = (process.platform == 'darwin');
 const SERVER_PING_INTERVAL = 500;
+const NETWORK_TIMEOUT_INTERVAL = 5000;
 var config = {};
+var networkDisconnectedTimeout;
 
 
 
@@ -36,7 +38,7 @@ initializeHTTPSConnection();
 // ==================== INIT ATTITUDEDMX ====================
 const AttitudeDMX = require('./AttitudeDMX');
 
-AttitudeDMX.initialize(false);
+AttitudeDMX.initialize(true);
 AttitudeDMX.startDMX();
 
 // default to black
@@ -457,7 +459,7 @@ function restartEngine() {
 	startEngine();
 }
 
-setTimeout(startEngine, 1000);
+setTimeout(startEngine, 5000);
 
 function floor(number) {
 	return Math.floor(number);
@@ -726,6 +728,12 @@ function parseNewHTTPSData(data) {
 
 	saveConfigToJSON();
 	// console.log(config.patch);
+
+	AttitudeDMX.setNetworkStatus(true);
+	networkDisconnectedTimeout = setTimeout(function() {
+		log.http('SERVER', 'Disconnected from attitude.lighting server!');
+		AttitudeDMX.setNetworkStatus(false);
+	}, NETWORK_TIMEOUT_INTERVAL);
 }
 
 

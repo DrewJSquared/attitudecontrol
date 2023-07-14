@@ -27,6 +27,8 @@ var queue = [[], []];
 var dmxInterval;
 var dmxIntervalActive = false;
 var framesPerSecond = 0;
+var whichPiIsWhich = [0, 1];
+var networkStatus = false;
 
 // dmxvals
 var dmxVals = [[],[],[],[]];
@@ -151,7 +153,15 @@ function parse(p, data) {
   	if (DEBUG_INPUT) { console.log('input' + p + ' ' + input); }
 
 	if (initialized[p] == true) {
-		if (input.includes('k')) {
+		if (input.includes('k') || input.includes('l')) {
+			if (input.includes('k')) {
+				whichPiIsWhich[p] = 0;
+			}
+
+			if (input.includes('l')) {
+				whichPiIsWhich[p] = 1;
+			}
+
 			if (queue[p].length == 0) {
 				canSend[p] = true;
 			} else {
@@ -194,20 +204,20 @@ function reconnect(p) {
 // senduniverse - loop through DMX vals for universe and send to port
 function sendUniverse(universe) {
 	if (universe == 0) {
-		var p = 0;
+		var p = whichPiIsWhich[0];
 		var u = 1;
 	} else if (universe == 1) {
-		var p = 0;
+		var p = whichPiIsWhich[0];
 		var u = 2;
 	} else if (universe == 2) {
-		var p = 1;
+		var p = whichPiIsWhich[1];
 		var u = 1;
 	} else if (universe == 3) {
-		var p = 1;
+		var p = whichPiIsWhich[1];
 		var u = 2;
 	}
 
-	var data = String(u);
+	var data = String(u) + String(+ networkStatus);
 
 	for (var c = 0; c < 512; c++) {
 		var hex = dmxVals[universe][c].toString(16);
@@ -228,10 +238,24 @@ if (DEBUG_FPS) {
 	setInterval(() => {
 		if (DEBUG_FPS && dmxIntervalActive) {
 			log.info('DMX Status', 'FPS: ' + framesPerSecond + '  Q0: ' + queue[0].length + '  Q1: ' + queue[1].length);
+			// + '  whichPiIsWhich ' + whichPiIsWhich[0] + ', ' + whichPiIsWhich[1]
 		}
 		framesPerSecond = 0;
 	}, 1000);
 }
+
+
+// catch potential overflow on queues
+setInterval(() => {
+	if (queue[0].length > 100) {
+		queue[0] = [];
+		log.error('DMX0', 'Queue overflow error!');
+	}
+	if (queue[1].length > 100) {
+		queue[1] = [];
+		log.error('DMX1', 'Queue overflow error!');
+	}
+}, 10000);
 
 
 
@@ -258,6 +282,10 @@ module.exports = {
 	stopDMX: function () {
 		dmxIntervalActive = false;
 		dmxinterval.clearInterval();
+	},
+
+	setNetworkStatus: function (val) {
+		networkStatus = val;
 	},
 
 	set: function (u, c, v) {
