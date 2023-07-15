@@ -9,9 +9,7 @@ var DEVICE_ID = 0;
 var SERIALNUMBER = 'AC-00100XX';
 const LAPTOP_MODE = (process.platform == 'darwin');
 const SERVER_PING_INTERVAL = 500;
-const NETWORK_TIMEOUT_INTERVAL = 5000;
 var config = {};
-var networkDisconnectedTimeout;
 
 
 
@@ -69,7 +67,7 @@ function engine() {
 	// rebuild engine patch
 	enginePatch = [];
 
-	if (typeof config.patch.zonesList !== "undefined") {
+	if (typeof config.patch !== "undefined" && typeof config.patch.zonesList !== "undefined") {
 		var enginePatch = [];
 
 		for (var z = 0; z < config.patch.zonesList.length; z++) {
@@ -705,6 +703,7 @@ function getData(allData = false) {
 		});
 	}).on("error", err => {
 		log.error('HTTPS', 'Error: ' + err.message);
+		AttitudeDMX.setNetworkStatus(false);
 	});
 }
 
@@ -730,10 +729,6 @@ function parseNewHTTPSData(data) {
 	// console.log(config.patch);
 
 	AttitudeDMX.setNetworkStatus(true);
-	networkDisconnectedTimeout = setTimeout(function() {
-		log.http('SERVER', 'Disconnected from attitude.lighting server!');
-		AttitudeDMX.setNetworkStatus(false);
-	}, NETWORK_TIMEOUT_INTERVAL);
 }
 
 
