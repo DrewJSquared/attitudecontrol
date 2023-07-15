@@ -118,21 +118,21 @@ function engine() {
 
 
 		// VARIABLES
-		var showType = parseInt(config.shows[0].type);
-		var colors = config.shows[0].colorsList.length;
-		var speedRange = 101 - parseInt(config.shows[0].speed); // 100 -> 1 range
+		var showType = parseInt(config.shows[1].type);
+		var colors = config.shows[1].colorsList.length;
+		var speedRange = 101 - parseInt(config.shows[1].speed); // 100 -> 1 range
 		var totalTime = 100;
 
 		var newSpeedRange = speedRange;// - (colors-3);
 		var exp = (speedRange >= 90) ? (newSpeedRange-80) ** 2.3 : newSpeedRange ** 1.1;
 		totalTime = round(exp) + ((colors-1) * 5);
 
-		var size = parseInt(config.shows[0].size);
-		var direction = parseInt(config.shows[0].direction);
+		var size = parseInt(config.shows[1].size);
+		var direction = parseInt(config.shows[1].direction);
 
-		var splits = splitsOptions[parseInt(config.shows[0].splits) - 1];
+		var splits = splitsOptions[parseInt(config.shows[1].splits) - 1];
 
-		var colorsList = config.shows[0].colorsList;
+		var colorsList = config.shows[1].colorsList;
 
 		// for each zone in this patch
 		for (var z = 0; z < enginePatch.length; z++) {
