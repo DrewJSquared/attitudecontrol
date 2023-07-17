@@ -267,6 +267,8 @@ function parseNewHTTPSData(data) {
 	saveConfigToJSON();
 
 	AttitudeDMX.setNetworkStatus(true);
+
+	buildShowsPatch();
 }
 
 
