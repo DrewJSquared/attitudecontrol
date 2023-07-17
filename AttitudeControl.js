@@ -54,6 +54,10 @@ AttitudeEngine.updateShowsPatch(showsPatch);
 
 setTimeout(() => AttitudeEngine.startEngine(), 2000);
 
+buildShowsPatch();
+setTimeout(() => buildShowsPatch(), 5000);
+
+
 
 
 
@@ -199,28 +203,6 @@ function createEnginePatchFromFixturesList(fixturesList) {
 
 
 
-// ==================== UTILITY FUNCTIONS ====================
-
-function findShowById(showId) {
-	return config.shows.find(itm => itm.id == showId);
-}
-
-function findFixtureType(fixtureTypeId) {
-	return config.fixtureTypes.find(itm => itm.id == fixtureTypeId);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -285,8 +267,6 @@ function parseNewHTTPSData(data) {
 	saveConfigToJSON();
 
 	AttitudeDMX.setNetworkStatus(true);
-
-	buildShowsPatch();
 }
 
 
@@ -379,6 +359,15 @@ function saveConfigToJSON() {
 
 
 // ==================== UTILITY FUNCTIONS ====================
+
+function findShowById(showId) {
+	return config.shows.find(itm => itm.id == showId);
+}
+
+function findFixtureType(fixtureTypeId) {
+	return config.fixtureTypes.find(itm => itm.id == fixtureTypeId);
+}
+
 function outputZerosToAllChannels() {
 	for (var i = 0; i < 512; i++) {
 		AttitudeDMX.set(1, i, 0);
