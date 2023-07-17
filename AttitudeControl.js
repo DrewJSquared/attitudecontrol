@@ -54,8 +54,7 @@ AttitudeEngine.updateShowsPatch(showsPatch);
 
 setTimeout(() => AttitudeEngine.startEngine(), 2000);
 
-buildShowsPatch();
-setTimeout(() => buildShowsPatch(), 5000);
+setInterval(() => buildShowsPatch(), 5000); // even without internet we still need to buildShowsPatch to incorporate schedule every 5s
 
 
 
