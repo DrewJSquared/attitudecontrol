@@ -304,37 +304,72 @@ function parseNewHTTPSData(data) {
 function loadDeviceID() {
 	var path = '../id.json';
 	if (LAPTOP_MODE) { path = 'id_template.json'; }
-	let rawdata = fs.readFileSync(path);
-	let data = JSON.parse(rawdata);
 
-	DEVICE_ID = data.device_id;
-	SERIALNUMBER = data.serialnumber;
+	try {
+	  	let rawdata = fs.readFileSync(path);
+	
+	  	try {
+		  	let data = JSON.parse(rawdata);
 
-	// if either does not update properly then crash the app
-	if (!Number.isInteger(DEVICE_ID) || typeof SERIALNUMBER != 'string') {
-		log.error('INIT', 'Failed to initialize Device ID and/or Serial Number.');
+			DEVICE_ID = data.device_id;
+			SERIALNUMBER = data.serialnumber;
+
+			// if either does not update properly then crash the app
+			if (!Number.isInteger(DEVICE_ID) || typeof SERIALNUMBER != 'string') {
+				log.error('INIT', 'Failed to initialize Device ID and/or Serial Number.');
+				process.exit();
+			}
+
+		  	log.info('INIT', 'Device ID: ' + DEVICE_ID + ', Serial Number: ' + SERIALNUMBER);
+		}
+		catch(err) {
+		  	log.error('INIT', 'JSON.parse(rawdata) error! Failed to load device ID!');
+		  	log.error('INIT', 'Error: ' + err.message);
+			process.exit();
+		}
+	}
+	catch(err) {
+	  	log.error('INIT', 'id.json file not found! Failed to load device ID!');
+	  	log.error('INIT', 'Error: ' + err.message);
 		process.exit();
 	}
-
-	log.info('INIT', 'Device ID: ' + DEVICE_ID + ', Serial Number: ' + SERIALNUMBER);
 }
 
 
 // loadConfigFromJSON - load locally saved config from config.json
 function loadConfigFromJSON() {
-	let rawdata = fs.readFileSync('config.json');
-	config = JSON.parse(rawdata);
-	
-	log.info('JSON', 'Loaded locally saved config from config.json!');
+	var rawdata = '{}';
+	try {
+	  	rawdata = fs.readFileSync('config.json');
+
+	  	try {
+		  	config = JSON.parse(rawdata);
+			log.info('JSON', 'Loaded locally saved config from config.json!');
+		}
+		catch(err) {
+		  	log.error('JSON', 'JSON.parse(rawdata) error!');
+		  	log.error('JSON', 'Error: ' + err.message);
+		}
+	}
+	catch(err) {
+	  	log.error('JSON', 'config.json file not found!');
+	  	log.error('JSON', 'Error: ' + err.message);
+	}
 }
 
 
 // saveConfigToJSON - save config to config.json
 function saveConfigToJSON() {
-	var dataToSave = JSON.stringify(config);
-	fs.writeFile('config.json', dataToSave, 'utf8', function () {
-		// log.info('JSON', 'Successfully saved config to config.json file.');
-	});
+	try {
+		var dataToSave = JSON.stringify(config);
+		fs.writeFile('config.json', dataToSave, 'utf8', function () {
+			// log.info('JSON', 'Successfully saved config to config.json file.');
+		});
+	}
+	catch(err) {
+	  	log.error('JSON', 'Failed to save config to config.json file!');
+	  	log.error('JSON', 'Error: ' + err.message);
+	}
 }
 
 
