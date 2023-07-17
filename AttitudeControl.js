@@ -86,8 +86,14 @@ function buildShowsPatch() {
     		if (thisBlock.start - 1 <= currentTime.getHours() && thisBlock.start - 1 + thisBlock.height > currentTime.getHours()) {
     			currentEventBlockId = thisBlock.eventBlockId;
     		}
+    		// use minutes instead of hours
+    		// if (thisBlock.start - 1 <= (currentTime.getMinutes() - 20) && thisBlock.start - 1 + thisBlock.height > (currentTime.getMinutes() - 20)) {
+    		// 	currentEventBlockId = thisBlock.eventBlockId;
+    		// }
     	}
     }
+
+	// console.log(currentEventBlockId);
 
     // if any event block is active, build a showspatch : a list of shows that need to be run currently and the fixtures to run them on
     if (currentEventBlockId > 0) {
