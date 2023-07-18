@@ -79,20 +79,20 @@ function buildShowsPatch() {
 	var currentTime = new Date();
 
 	console.log(currentTime);
-	console.log(currentTime.getMinutes());
+	console.log(currentTime.getHours());
 
 	// figure out what event block is currently active based on time and schedule
     var currentEventBlockId = 0;
     for (var s = 0; s < config.scheduleBlocks.length; s++) {
     	var thisBlock = config.scheduleBlocks[s];
     	if (thisBlock.day == currentTime.getDay() + 1) {
-    		// if (thisBlock.start - 1 <= currentTime.getHours() && thisBlock.start - 1 + thisBlock.height > currentTime.getHours()) {
-    		// 	currentEventBlockId = thisBlock.eventBlockId;
-    		// }
-    		// use minutes instead of hours
-    		if (thisBlock.start - 1 <= (currentTime.getMinutes() - 20) && thisBlock.start - 1 + thisBlock.height > (currentTime.getMinutes() - 20)) {
+    		if (thisBlock.start - 1 <= currentTime.getHours() && thisBlock.start - 1 + thisBlock.height > currentTime.getHours()) {
     			currentEventBlockId = thisBlock.eventBlockId;
     		}
+    		// use minutes instead of hours
+    		// if (thisBlock.start - 1 <= (currentTime.getMinutes() - 20) && thisBlock.start - 1 + thisBlock.height > (currentTime.getMinutes() - 20)) {
+    		// 	currentEventBlockId = thisBlock.eventBlockId;
+    		// }
     	}
     }
 
