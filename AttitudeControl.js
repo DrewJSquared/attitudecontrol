@@ -78,8 +78,8 @@ function buildShowsPatch() {
 	// get current time
 	var currentTime = new Date();
 
-	console.log(currentTime);
-	console.log(currentTime.getHours());
+	// console.log(currentTime);
+	// console.log(currentTime.getHours());
 
 	// figure out what event block is currently active based on time and schedule
     var currentEventBlockId = 0;
@@ -96,7 +96,7 @@ function buildShowsPatch() {
     	}
     }
 
-	console.log('currentEventBlockId ' + currentEventBlockId);
+	// console.log('currentEventBlockId ' + currentEventBlockId);
 
     // if any event block is active, build a showspatch : a list of shows that need to be run currently and the fixtures to run them on
     if (currentEventBlockId > 0) {
