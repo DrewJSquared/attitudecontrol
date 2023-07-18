@@ -96,7 +96,7 @@ function buildShowsPatch() {
     	}
     }
 
-	// console.log(currentEventBlockId);
+	console.log('currentEventBlockId ' + currentEventBlockId);
 
     // if any event block is active, build a showspatch : a list of shows that need to be run currently and the fixtures to run them on
     if (currentEventBlockId > 0) {
