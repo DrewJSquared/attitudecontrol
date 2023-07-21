@@ -113,9 +113,12 @@ function buildShowsPatch() {
     				});
 	    			if (fixturesInThisGroup.length < 1) { continue; }
 
+	    			var thisShowId = currentEventBlock.showdata[z][g];
+	    			if (thisShowId < 1) { continue; }
+
 	    			var newShowBlock = {
     					counter: 0,
-			    		show: findShowById(currentEventBlock.showdata[z][g]),
+			    		show: findShowById(thisShowId),
 			    		fixtures: createEnginePatchFromFixturesList(fixturesInThisGroup),
 			    	}
 
@@ -126,9 +129,12 @@ function buildShowsPatch() {
     			var fixturesInThisZone = config.patch.fixturesList.filter(itm => itm.zoneNumber == z+1);
     			if (fixturesInThisZone.length < 1) { continue; }
 
+    			var thisShowId = currentEventBlock.showdata[z];
+    			if (thisShowId < 1) { continue; }
+
     			var newShowBlock = {
     				counter: 0,
-		    		show: findShowById(currentEventBlock.showdata[z]),
+		    		show: findShowById(thisShowId),
 		    		fixtures: createEnginePatchFromFixturesList(fixturesInThisZone),
 		    	}
 

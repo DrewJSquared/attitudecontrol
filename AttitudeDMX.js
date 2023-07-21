@@ -157,10 +157,12 @@ function parse(p, data) {
 		if (input.includes('k') || input.includes('l')) {
 			if (input.includes('k')) {
 				whichPiIsWhich[p] = 0;
+				whichPiIsWhich[ + !p] = 1;
 			}
 
 			if (input.includes('l')) {
 				whichPiIsWhich[p] = 1;
+				whichPiIsWhich[ + !p] = 0;
 			}
 
 			if (queue[p].length == 0) {
@@ -239,7 +241,7 @@ if (DEBUG_FPS) {
 	setInterval(() => {
 		if (DEBUG_FPS && dmxIntervalActive) {
 			log.info('DMX Status', 'FPS: ' + framesPerSecond + '  Q0: ' + queue[0].length + '  Q1: ' + queue[1].length);
-			// + '  whichPiIsWhich ' + whichPiIsWhich[0] + ', ' + whichPiIsWhich[1]
+			// console.log('  whichPiIsWhich ' + whichPiIsWhich[0] + ', ' + whichPiIsWhich[1]);
 		}
 		framesPerSecond = 0;
 	}, 1000);
