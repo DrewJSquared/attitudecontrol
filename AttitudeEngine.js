@@ -73,6 +73,7 @@ function engine() {
 
 	for (var s = 0; s < showsPatch.length; s++) {
 		// loop through each showsPatch
+		console.log(showsPatch[s].show);
 
 		var showType = parseInt(showsPatch[s].show.type);
 		var colors = showsPatch[s].show.colorsList.length;
