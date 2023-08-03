@@ -52,6 +52,7 @@ var portPaths = ['/dev/ttyACM0', '/dev/ttyACM1'];
 if (LAPTOP_MODE) {
 	portPaths = ['/dev/cu.usbmodem1201', '/dev/cu.usbmodem1301'];
 	// portPaths = ['/dev/cu.usbmodem11201', '/dev/cu.usbmodem11301'];
+	// portPaths = ['/dev/cu.usbmodem12301', '/dev/cu.usbmodem11301'];
 }
 
 const port = [
