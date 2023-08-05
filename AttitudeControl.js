@@ -52,8 +52,6 @@ const AttitudeEngine = require('./AttitudeEngine');
 AttitudeEngine.initialize(AttitudeDMX, config);
 AttitudeEngine.updateShowsPatch(showsPatch);
 
-setTimeout(() => AttitudeEngine.startEngine(), 2000);
-
 setInterval(() => buildShowsPatch(), 5000); // even without internet we still need to buildShowsPatch to incorporate schedule every 5s
 
 
@@ -79,7 +77,7 @@ function buildShowsPatch() {
 	var currentTime = new Date();
 
 	// console.log(currentTime);
-	// console.log(currentTime.getHours());
+	// console.log('current hour ' + currentTime.getHours());
 
 	// figure out what event block is currently active based on time and schedule
     var currentEventBlockId = 0;
@@ -88,6 +86,7 @@ function buildShowsPatch() {
     	if (thisBlock.day == currentTime.getDay() + 1) {
     		if (thisBlock.start - 1 <= currentTime.getHours() && thisBlock.start - 1 + thisBlock.height > currentTime.getHours()) {
     			currentEventBlockId = thisBlock.eventBlockId;
+				log.notice('DEBUG', '     H ' + currentTime.getHours() + '  evntBlckId ' + currentEventBlockId + '  start ' + (thisBlock.start - 1) + '  end ' + (thisBlock.start - 1 + thisBlock.height));
     		}
     		// use minutes instead of hours
     		// if (thisBlock.start - 1 <= (currentTime.getMinutes() - 20) && thisBlock.start - 1 + thisBlock.height > (currentTime.getMinutes() - 20)) {
@@ -97,6 +96,8 @@ function buildShowsPatch() {
     }
 
 	// console.log('currentEventBlockId ' + currentEventBlockId);
+
+	// console.log('H ' + currentTime.getHours() + '  evntBlckId ' + currentEventBlockId);
 
     // if any event block is active, build a showspatch : a list of shows that need to be run currently and the fixtures to run them on
     if (currentEventBlockId > 0) {
@@ -141,12 +142,14 @@ function buildShowsPatch() {
 		    	showsPatch.push(newShowBlock);
     		}
     	}
+
+    	AttitudeEngine.updateShowsPatch(showsPatch);
+    	AttitudeEngine.ensureEngineIsRunning();
     } else {
     	// else no event blocks are active, so blackout all channels
+    	AttitudeEngine.stopEngine();
 		outputZerosToAllChannels();
     }
-
-	AttitudeEngine.updateShowsPatch(showsPatch);
 }
 
 

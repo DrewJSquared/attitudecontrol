@@ -50,8 +50,8 @@ const { ReadlineParser } = require('@serialport/parser-readline');
 
 var portPaths = ['/dev/ttyACM0', '/dev/ttyACM1'];
 if (LAPTOP_MODE) {
-	portPaths = ['/dev/cu.usbmodem1201', '/dev/cu.usbmodem1301'];
-	// portPaths = ['/dev/cu.usbmodem11201', '/dev/cu.usbmodem11301'];
+	// portPaths = ['/dev/cu.usbmodem1201', '/dev/cu.usbmodem1301'];
+	portPaths = ['/dev/cu.usbmodem11201', '/dev/cu.usbmodem11301'];
 	// portPaths = ['/dev/cu.usbmodem12301', '/dev/cu.usbmodem11301'];
 }
 
@@ -144,6 +144,13 @@ function send(p, output) {
 		write(p, output);
 	} else {
 		queue[p].push(output);
+
+		if (queue[p].length > 25) {
+			// if the queue is greater than 25 then we likely have a disconnected port. this is an early sign.
+			// attempting to reconnect now will help ensure that the output is not down for very long.
+			console.log('ATTEMPTING TO RECONNECT BECUASE QUEUE > 15')
+			reconnect(p);
+		}
 	}
 }
 

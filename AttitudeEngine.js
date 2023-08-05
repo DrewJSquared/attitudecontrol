@@ -42,11 +42,19 @@ module.exports = {
 
 	stopEngine: function () {
 		clearInterval(engineIntervalVar);
+		engineIntervalVar = null;
 	},
 
 	restartEngine: function () {
 		stopEngine();
 		startEngine();
+	},
+
+	ensureEngineIsRunning: function () {
+		if (!engineIntervalVar) {
+			resetCounters = true;
+			engineIntervalVar = setInterval(engine, engineIntervalTime);
+		}
 	},
 
 	updateShowsPatch: function (showsPatch_obj) {
