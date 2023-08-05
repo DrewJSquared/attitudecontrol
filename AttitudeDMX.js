@@ -148,8 +148,14 @@ function send(p, output) {
 		if (queue[p].length > 25) {
 			// if the queue is greater than 25 then we likely have a disconnected port. this is an early sign.
 			// attempting to reconnect now will help ensure that the output is not down for very long.
-			console.log('ATTEMPTING TO RECONNECT BECUASE QUEUE > 15')
-			reconnect(p);
+			console.log('ATTEMPTING TO RECONNECT BECUASE QUEUE > 15. CLOSING PORT ' + p);
+
+			port[p].close(function (err) {
+			    console.log('port closed', err);
+
+			    console.log('RECONNECTING TO PORT ' + p);
+				reconnect(p);
+			});
 		}
 	}
 }
