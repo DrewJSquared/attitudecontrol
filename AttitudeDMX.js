@@ -50,8 +50,8 @@ const { ReadlineParser } = require('@serialport/parser-readline');
 
 var portPaths = ['/dev/ttyACM0', '/dev/ttyACM1'];
 if (LAPTOP_MODE) {
-	// portPaths = ['/dev/cu.usbmodem1201', '/dev/cu.usbmodem1301'];
-	portPaths = ['/dev/cu.usbmodem11201', '/dev/cu.usbmodem11301'];
+	portPaths = ['/dev/cu.usbmodem1201', '/dev/cu.usbmodem1301'];
+	// portPaths = ['/dev/cu.usbmodem11201', '/dev/cu.usbmodem11301'];
 	// portPaths = ['/dev/cu.usbmodem12301', '/dev/cu.usbmodem11301'];
 }
 
@@ -149,13 +149,17 @@ function send(p, output) {
 			if (queue[p].length > 25) {
 				// if the queue is greater than 25 then we likely have a disconnected port. this is an early sign.
 				// attempting to reconnect now will help ensure that the output is not down for very long.
-				log.notice('DMX', 'Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
+				// log.notice('DMX', 'Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
+				console.log('DMX Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
 
 				if (port[p].isOpen) {
-					log.notice('DMX', 'Closing port ' + (p+1) + '...');
+					// log.notice('DMX', 'Closing port ' + (p+1) + '...');
+					console.log('DMX Closing port ' + (p+1) + '...');
 
 					port[p].close(function (err) {
-						log.notice('DMX', 'Port ' + (p+1) + ' closed. Attempting to reconnect now...');
+						// log.notice('DMX', 'Port ' + (p+1) + ' closed. Attempting to reconnect now...');
+						console.log('DMX Port ' + (p+1) + ' closed. Attempting to reconnect now...');
+
 						reconnect(p);
 					});
 				}
@@ -206,19 +210,26 @@ function parse(p, data) {
 
 // reconnect - if port closes, attempt to reconnect
 var reconnecting = [];
+var isReconnecting = [false, false];
 function reconnect(p) {
 	if (!port[p].isOpen) {
 		initialized[p] = false;
 
-		reconnecting[p] = setInterval(function () {
-			if (port[p].isOpen) {
-				log.notice('DMX', 'AttitudeDMX Port ' + (p+1) + ' reconnected :)');
-				clearInterval(reconnecting[p]);
-				reconnecting[p] = null;
-			} else {
-				port[p].open();
-			}
-		}, RECONNECT_INTERVAL);
+		if (!isReconnecting[p]) {
+			isReconnecting[p] = true;
+			reconnecting[p] = setInterval(function () {
+				if (port[p].isOpen) {
+					// log.notice('DMX', 'AttitudeDMX Port ' + (p+1) + ' reconnected :)');
+					console.log('DMX AttitudeDMX Port ' + (p+1) + ' reconnected :)');
+					
+					clearInterval(reconnecting[p]);
+					reconnecting[p] = null;
+					isReconnecting[p] = false;
+				} else {
+					port[p].open();
+				}
+			}, RECONNECT_INTERVAL);
+		}
 	}
 }
 
