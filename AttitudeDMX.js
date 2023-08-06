@@ -145,17 +145,21 @@ function send(p, output) {
 	} else {
 		queue[p].push(output);
 
-		if (queue[p].length > 25) {
-			// if the queue is greater than 25 then we likely have a disconnected port. this is an early sign.
-			// attempting to reconnect now will help ensure that the output is not down for very long.
-			console.log('ATTEMPTING TO RECONNECT BECUASE QUEUE > 15. CLOSING PORT ' + p);
+		if (initialized[p] == true) {
+			if (queue[p].length > 25) {
+				// if the queue is greater than 25 then we likely have a disconnected port. this is an early sign.
+				// attempting to reconnect now will help ensure that the output is not down for very long.
+				log.notice('DMX', 'Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
 
-			port[p].close(function (err) {
-			    console.log('port closed', err);
+				if (port[p].isOpen) {
+					log.notice('DMX', 'Closing port ' + (p+1) + '...');
 
-			    console.log('RECONNECTING TO PORT ' + p);
-				reconnect(p);
-			});
+					port[p].close(function (err) {
+						log.notice('DMX', 'Port ' + (p+1) + ' closed. Attempting to reconnect now...');
+						reconnect(p);
+					});
+				}
+			}
 		}
 	}
 }
@@ -210,6 +214,7 @@ function reconnect(p) {
 			if (port[p].isOpen) {
 				log.notice('DMX', 'AttitudeDMX Port ' + (p+1) + ' reconnected :)');
 				clearInterval(reconnecting[p]);
+				reconnecting[p] = null;
 			} else {
 				port[p].open();
 			}
