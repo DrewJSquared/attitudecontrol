@@ -19,6 +19,7 @@ var DEBUG_OUTPUT = false;
 var RECONNECT_INTERVAL = 500;
 var DMX_INTERVAL_SPEED = 35; // best performance found at 32/laptop  36/raspi
 var LAPTOP_MODE = (process.platform == 'darwin');
+var GAMMA_FACTOR = 2.8;
 
 //  status & queues
 var initialized = [false, false];
@@ -252,8 +253,10 @@ function sendUniverse(universe) {
 
 	var data = String(u) + String(+ networkStatus);
 
+	var logData = [];
+
 	for (var c = 0; c < 512; c++) {
-		var hex = dmxVals[universe][c].toString(16);
+		var hex = gamma(dmxVals[universe][c]).toString(16);
 		if (hex.length < 2) {
 			hex = "0" + hex;
 		}
@@ -289,6 +292,12 @@ setInterval(() => {
 		log.error('DMX1', 'Queue overflow error!');
 	}
 }, 10000);
+
+
+// gamma - take a value and gamma curve it to output on LEDs
+function gamma(i) {
+	return Math.round(Math.pow(i / 255, GAMMA_FACTOR) * 255);
+}
 
 
 
