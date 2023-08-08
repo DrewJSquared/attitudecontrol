@@ -79,12 +79,13 @@ port[1].on('error', function(err) {
 
 // Port close callbacks
 port[0].on('close', function() {
-	log.notice('DMX', 'AttitudeDMX Port 1 disconnected!');
+	var now = new Date();
+	log.notice('DMX', ' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port 1 disconnected!');
 	reconnect(0);
 });
 
 port[1].on('close', function() {
-	log.notice('DMX', 'AttitudeDMX Port 2 disconnected!');
+	log.notice('DMX', ' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port 2 disconnected!');
 	reconnect(1);
 });
 
@@ -109,14 +110,18 @@ function initialize() {
 	port[0].open(function (err) {
 		if (err) {
 			log.error('DMX', 'Port 1 ' + err.message);
-			reconnect(0);
+
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  Manually closing port 1, which will call close method and then reconnect to port.')
+			port[p].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
 		}
 	});
 
 	port[1].open(function (err) {
 		if (err) {
 			log.error('DMX', 'Port 2 ' + err.message);
-			reconnect(1);
+
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  Manually closing port 2, which will call close method and then reconnect to port.')
+			port[p].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
 		}
 	});
 }
@@ -151,17 +156,17 @@ function send(p, output) {
 				// if the queue is greater than 25 then we likely have a disconnected port. this is an early sign.
 				// attempting to reconnect now will help ensure that the output is not down for very long.
 				// log.notice('DMX', 'Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
-				console.log('DMX Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
+				console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
 
 				if (port[p].isOpen) {
 					// log.notice('DMX', 'Closing port ' + (p+1) + '...');
-					console.log('DMX Closing port ' + (p+1) + '...');
+					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX Closing port ' + (p+1) + '...');
 
 					port[p].close(function (err) {
 						// log.notice('DMX', 'Port ' + (p+1) + ' closed. Attempting to reconnect now...');
-						console.log('DMX Port ' + (p+1) + ' closed. Attempting to reconnect now...');
+						console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX Port ' + (p+1) + ' closed. NOT ATTEMPTING RECONNECT HERE, INSTEAD CLOSE FUNCTION SHOULD HANDLE IT');
 
-						reconnect(p);
+						// reconnect(p); COMMENTED OUT 8/8/23 BECAUSE I THINK THIS IS DOUBLE RECONNECTING HERE
 					});
 				}
 			}
@@ -203,7 +208,7 @@ function parse(p, data) {
 			initialized[p] = true;
 			canSend[p] = true;
 			queue[p] = [];
-			log.notice('DMX', 'AttitudeDMX Port ' + (p+1) + ' initialized!');
+			log.notice('DMX', ' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port ' + (p+1) + ' initialized!');
 		}
 	}
 }
@@ -213,20 +218,24 @@ function parse(p, data) {
 var reconnecting = [];
 var isReconnecting = [false, false];
 function reconnect(p) {
+	console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  someone called reconnect function...')
 	if (!port[p].isOpen) {
 		initialized[p] = false;
 
 		if (!isReconnecting[p]) {
+			console.log('WAS NOT previously reconnecting, so time to set up an interval to reconnect...')
+
 			isReconnecting[p] = true;
 			reconnecting[p] = setInterval(function () {
 				if (port[p].isOpen) {
 					// log.notice('DMX', 'AttitudeDMX Port ' + (p+1) + ' reconnected :)');
-					console.log('DMX AttitudeDMX Port ' + (p+1) + ' reconnected :)');
+					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX AttitudeDMX Port ' + (p+1) + ' reconnected :)');
 					
 					clearInterval(reconnecting[p]);
 					reconnecting[p] = null;
 					isReconnecting[p] = false;
 				} else {
+					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  attempting to open port...')
 					port[p].open();
 				}
 			}, RECONNECT_INTERVAL);
