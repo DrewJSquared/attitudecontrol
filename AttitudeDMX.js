@@ -216,6 +216,7 @@ function parse(p, data) {
 
 
 			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  # of objects in PORT variable: ' + port.length);
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  currrently init = ' + initialized[0] + ','  + initialized[1] + ' cansend= ' + canSend[0] + ',' + canSend[1]);
 		}
 	}
 }
