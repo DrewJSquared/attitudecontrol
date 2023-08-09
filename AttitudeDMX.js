@@ -213,6 +213,9 @@ function parse(p, data) {
 			queue[p] = [];
 			log.notice('DMX', ' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port ' + (p+1) + ' initialized!');
 			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port ' + (p+1) + ' initialized!');
+
+
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  # of objects in PORT variable: ' + port.length);
 		}
 	}
 }
