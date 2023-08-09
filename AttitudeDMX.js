@@ -79,7 +79,6 @@ port[1].on('error', function(err) {
 
 // Port close callbacks
 port[0].on('close', function() {
-	var now = new Date();
 	log.notice('DMX', ' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port 1 disconnected!');
 	reconnect(0);
 });
@@ -111,8 +110,10 @@ function initialize() {
 		if (err) {
 			log.error('DMX', 'Port 1 ' + err.message);
 
-			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  Manually closing port 1, which will call close method and then reconnect to port.')
-			port[p].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  reconnect port 1, since if an err occurs here (on open) then the port is already NOT OPEN so its already closed.')
+			reconnect(1);
+
+			// port[0].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
 		}
 	});
 
@@ -120,8 +121,10 @@ function initialize() {
 		if (err) {
 			log.error('DMX', 'Port 2 ' + err.message);
 
-			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  Manually closing port 2, which will call close method and then reconnect to port.')
-			port[p].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  reconnect port 2, since if an err occurs here (on open) then the port is already NOT OPEN so its already closed.')
+			reconnect(1);
+			
+			// port[1].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
 		}
 	});
 }
@@ -209,6 +212,7 @@ function parse(p, data) {
 			canSend[p] = true;
 			queue[p] = [];
 			log.notice('DMX', ' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port ' + (p+1) + ' initialized!');
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX Port ' + (p+1) + ' initialized!');
 		}
 	}
 }
@@ -229,11 +233,13 @@ function reconnect(p) {
 			reconnecting[p] = setInterval(function () {
 				if (port[p].isOpen) {
 					// log.notice('DMX', 'AttitudeDMX Port ' + (p+1) + ' reconnected :)');
-					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX AttitudeDMX Port ' + (p+1) + ' reconnected :)');
+					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX AttitudeDMX Port ' + (p+1) + ' re OPENED :)');
 					
 					clearInterval(reconnecting[p]);
 					reconnecting[p] = null;
 					isReconnecting[p] = false;
+
+					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  currrently init[p] ' + initialized[p] + ' cansend[p] ' + canSend[p]);
 				} else {
 					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  attempting to open port...')
 					port[p].open();
