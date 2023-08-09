@@ -106,6 +106,8 @@ parser[1].on('data', function(data) {
 
 // initialize - open serial ports
 function initialize() {
+	console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  AttitudeDMX initializing........ ');
+
 	port[0].open(function (err) {
 		if (err) {
 			log.error('DMX', 'Port 1 ' + err.message);
@@ -114,6 +116,8 @@ function initialize() {
 			reconnect(1);
 
 			// port[0].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
+		} else {
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  i think we opened port 1 sucessfully... ');
 		}
 	});
 
@@ -125,6 +129,8 @@ function initialize() {
 			reconnect(1);
 			
 			// port[1].close(); // manually close port, which will call close method on port, which is defined above to call reconnect method anyway
+		} else {
+			console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  i think we opened port 2 sucessfully... ');
 		}
 	});
 }
@@ -246,7 +252,13 @@ function reconnect(p) {
 					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  currrently init[p] ' + initialized[p] + ' cansend[p] ' + canSend[p]);
 				} else {
 					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  attempting to open port...')
-					port[p].open();
+					port[p].open(function (err) {
+						if (err) {
+							console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  errror opening port to reconnect: ' + err);
+						} else {
+							console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  seems like we sucessfully opened the port?');
+						}
+					});
 				}
 			}, RECONNECT_INTERVAL);
 		}
