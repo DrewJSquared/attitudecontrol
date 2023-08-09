@@ -27,6 +27,8 @@ const https = require("https");
 log.info('INIT', 'Attitude Control Device Firmware');
 log.info('INIT', 'Copyright 2023 Drew Shipps, J Squared Systems');
 
+console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  Init Attitude Control Device Firmware ...');
+
 loadDeviceID();
 loadConfigFromJSON();
 initializeHTTPSConnection();
