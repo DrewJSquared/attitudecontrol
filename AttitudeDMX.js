@@ -167,6 +167,10 @@ function send(p, output) {
 				// log.notice('DMX', 'Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
 				console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX Port ' + (p+1) + ' may be disconnected. Attempting to reconnect now... (ERR QUEUE > 25)');
 
+				initialized[p] = false;
+				canSend[p] = false;
+				queue[p] = [];
+
 				if (port[p].isOpen) {
 					// log.notice('DMX', 'Closing port ' + (p+1) + '...');
 					console.log(' --- ' + new Date().toLocaleTimeString() + ' ---  DMX Closing port ' + (p+1) + '...');
@@ -295,6 +299,11 @@ function sendUniverse(universe) {
 	}
 
 	// console.log(data);
+	if (universe == 1) {
+		log.info('DMX DATA: ', dmxVals[universe][0] + ', ' + dmxVals[universe][1] + ', ' + dmxVals[universe][2] + ', '
+			 + dmxVals[universe][3] + ', ' + dmxVals[universe][4] + ', ' + dmxVals[universe][5]
+			  + ', ' + dmxVals[universe][6] + ', ' + dmxVals[universe][7]);
+	}
 
 	send(p, data);
 }
