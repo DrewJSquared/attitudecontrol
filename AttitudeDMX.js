@@ -290,7 +290,9 @@ function sendUniverse(universe) {
 		var u = 2;
 	}
 
-	var data = String(u) + String(+ networkStatus);
+	var data = JSON.stringify(u) + JSON.stringify(+ networkStatus);
+
+	// console.log(data);
 
 	var logData = [];
 
@@ -309,7 +311,7 @@ function sendUniverse(universe) {
 	// 		  + ', ' + dmxVals[universe][6] + ', ' + dmxVals[universe][7]);
 	// }
 
-	send(p, data);
+	send(JSON.parse(JSON.stringify(p)), JSON.parse(JSON.stringify(data)));
 }
 
 
