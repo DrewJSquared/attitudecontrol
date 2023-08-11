@@ -142,6 +142,10 @@ function write(p, output) {
 
 	if (DEBUG_OUTPUT) { console.log('output' + p + '  ' + output); }
 
+	if (p == 0) {
+		log.info('PORT OUT DATA: ', output.substring(0, 20));
+	}
+
 	if (port[p].isOpen) {
 		port[p].write(output + '\n', function(err) {
 			if (port[p].isOpen) {
@@ -299,11 +303,11 @@ function sendUniverse(universe) {
 	}
 
 	// console.log(data);
-	if (universe == 1) {
-		log.info('DMX DATA: ', dmxVals[universe][0] + ', ' + dmxVals[universe][1] + ', ' + dmxVals[universe][2] + ', '
-			 + dmxVals[universe][3] + ', ' + dmxVals[universe][4] + ', ' + dmxVals[universe][5]
-			  + ', ' + dmxVals[universe][6] + ', ' + dmxVals[universe][7]);
-	}
+	// if (universe == 1) {
+	// 	log.info('DMX DATA: ', dmxVals[universe][0] + ', ' + dmxVals[universe][1] + ', ' + dmxVals[universe][2] + ', '
+	// 		 + dmxVals[universe][3] + ', ' + dmxVals[universe][4] + ', ' + dmxVals[universe][5]
+	// 		  + ', ' + dmxVals[universe][6] + ', ' + dmxVals[universe][7]);
+	// }
 
 	send(p, data);
 }
