@@ -11,6 +11,7 @@ const LAPTOP_MODE = (process.platform == 'darwin');
 const SERVER_PING_INTERVAL = 500;
 var config = {};
 var showsPatch = [];
+var notAssignedToLocation = false;
 
 
 
@@ -81,10 +82,10 @@ function buildShowsPatch() {
 	// console.log(currentTime);
 	// console.log('current hour ' + currentTime.getHours());
 
-	if (typeof config.scheduleBlocks == 'undefined') {
+	if (typeof config.scheduleBlocks == 'undefined' || notAssignedToLocation) {
 		AttitudeEngine.stopEngine();
 		outputZerosToAllChannels();
-		
+
 		return;
 	}
 
@@ -292,7 +293,11 @@ function parseNewHTTPSData(data) {
 		AttitudeEngine.stopEngine();
 		outputZerosToAllChannels();
 
+		notAssignedToLocation = true;
+
 		return;
+	} else {
+		notAssignedToLocation = false;
 	}
 
 	newData = JSON.parse(data);
