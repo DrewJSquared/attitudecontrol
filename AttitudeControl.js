@@ -81,6 +81,13 @@ function buildShowsPatch() {
 	// console.log(currentTime);
 	// console.log('current hour ' + currentTime.getHours());
 
+	if (typeof config.scheduleBlocks == 'undefined') {
+		AttitudeEngine.stopEngine();
+		outputZerosToAllChannels();
+		
+		return;
+	}
+
 	// figure out what event block is currently active based on time and schedule
     var currentEventBlockId = 0;
     for (var s = 0; s < config.scheduleBlocks.length; s++) {
@@ -275,6 +282,19 @@ function getData(allData = false) {
 // parseNewHTTPSData - process new data downloaded from server
 function parseNewHTTPSData(data) {
 	log.http('SERVER', 'Connected to attitude.lighting server!');
+
+	if (data == 'Unassigned') {
+		// log.info('SERVER', '============ UNASSIGNED ============');
+
+		saveConfigToJSON();
+		AttitudeDMX.setNetworkStatus(true);
+
+		AttitudeEngine.stopEngine();
+		outputZerosToAllChannels();
+
+		return;
+	}
+
 	newData = JSON.parse(data);
 
 	Object.keys(newData).forEach(function(key) {
