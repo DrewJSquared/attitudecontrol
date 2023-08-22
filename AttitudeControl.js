@@ -13,6 +13,8 @@ var config = {};
 var showsPatch = [];
 var notAssignedToLocation = false;
 
+var tryingForAllData = false;
+
 
 
 
@@ -254,14 +256,13 @@ function initializeHTTPSConnection() {
 }
 
 // getData - get all data or only new data from attitude.lighting server and update object
-var tryingForAllData = false;
 function getData(allData = false) {
 	var url = 'https://attitude.lighting/api/devices/';
 	var type = '/newdata';
 	if (allData || tryingForAllData) {
 		type = '/data';
 		tryingForAllData = true;
-		log.info('HTTPS', 'ALL DATA');
+		console.log('+++++  TRYING FOR ALL DATA: ' + tryingForAllData);
 	}
 
 	https.get(url + DEVICE_ID + type, resp => {
@@ -274,9 +275,11 @@ function getData(allData = false) {
 
 		// finished, do something with result
 		resp.on("end", () => {
-			if (data.length > 1 && tryingForAllData) {
+			console.log('+++++  TRYING FOR ALL DATA: ' + tryingForAllData + '  && LENGTH = ' + data.length);
+
+			if (data.length > 5 && tryingForAllData) {
 				tryingForAllData = false;
-				console.log('tryingForAllData = false;');
+				console.log(' ======= ==== RESET TRYING  ======= ==== ');
 			}
 			parseNewHTTPSData(data);
 		});
