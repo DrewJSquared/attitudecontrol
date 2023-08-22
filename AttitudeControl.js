@@ -254,11 +254,13 @@ function initializeHTTPSConnection() {
 }
 
 // getData - get all data or only new data from attitude.lighting server and update object
+var tryingForAllData = false;
 function getData(allData = false) {
 	var url = 'https://attitude.lighting/api/devices/';
 	var type = '/newdata';
-	if (allData) {
+	if (allData || tryingForAllData) {
 		type = '/data';
+		tryingForAllData = true;
 	}
 
 	https.get(url + DEVICE_ID + type, resp => {
@@ -271,6 +273,9 @@ function getData(allData = false) {
 
 		// finished, do something with result
 		resp.on("end", () => {
+			if (data.length > 1 && tryingForAllData) {
+				tryingForAllData = false;
+			}
 			parseNewHTTPSData(data);
 		});
 	}).on("error", err => {
