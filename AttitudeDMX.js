@@ -143,7 +143,7 @@ function write(p, output) {
 	if (DEBUG_OUTPUT) { console.log('output' + p + '  ' + output); }
 
 	if (p == 0) {
-		log.info('PORT OUT DATA: ', output.substring(0, 20));
+		//log.info('PORT OUT DATA: ', output.substring(0, 20));
 	}
 
 	if (port[p].isOpen) {
