@@ -275,9 +275,11 @@ function getData(allData = false) {
 
 		// finished, do something with result
 		resp.on("end", () => {
-			console.log('+++++  TRYING FOR ALL DATA: ' + tryingForAllData + '  && LENGTH = ' + data.length);
 
 			if (data.length > 5 && tryingForAllData) {
+				console.log('+++++  TRYING FOR ALL DATA: ' + tryingForAllData + '  && LENGTH = ' + data.length);
+
+				
 				tryingForAllData = false;
 				console.log(' ======= ==== RESET TRYING  ======= ==== ');
 			}
