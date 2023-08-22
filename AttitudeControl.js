@@ -261,6 +261,7 @@ function getData(allData = false) {
 	if (allData || tryingForAllData) {
 		type = '/data';
 		tryingForAllData = true;
+		log.info('HTTPS', 'ALL DATA');
 	}
 
 	https.get(url + DEVICE_ID + type, resp => {
@@ -275,6 +276,7 @@ function getData(allData = false) {
 		resp.on("end", () => {
 			if (data.length > 1 && tryingForAllData) {
 				tryingForAllData = false;
+				console.log('tryingForAllData = false;');
 			}
 			parseNewHTTPSData(data);
 		});
