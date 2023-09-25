@@ -324,6 +324,16 @@ function parseNewHTTPSData(data) {
 
 	AttitudeDMX.setNetworkStatus(true);
 
+	// reboot device if command received from server
+	if (typeof newData.devicemeta !== 'undefined') {
+		if (newData.devicemeta.reboot == true || false) {
+			console.log('+++++ REBOOT +++++');
+			if (!LAPTOP_MODE) {
+				require('child_process').exec('sudo /sbin/shutdown now', function (msg) { console.log(msg) });
+			}
+		}
+	}
+
 	buildShowsPatch();
 }
 
