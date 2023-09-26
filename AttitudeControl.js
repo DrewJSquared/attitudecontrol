@@ -327,7 +327,9 @@ function parseNewHTTPSData(data) {
 	// reboot device if command received from server
 	if (typeof newData.devicemeta !== 'undefined') {
 		if (newData.devicemeta.reboot == true || false) {
-			console.log('+++++ REBOOT +++++');
+			console.log('+++++ REBOOT & DELETE CONFIG FILE +++++');
+			fs.rmSync('config.json', { recursive: true, force: true });
+
 			if (!LAPTOP_MODE) {
 				require('child_process').exec('sudo /sbin/shutdown now', function (msg) { console.log(msg) });
 			}
