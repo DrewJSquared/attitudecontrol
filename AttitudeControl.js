@@ -312,7 +312,15 @@ function parseNewHTTPSData(data) {
 		notAssignedToLocation = false;
 	}
 
-	newData = JSON.parse(data);
+	// attempt to parse JSON data received from server
+	newData = tryParseJSONObject(data);
+
+	// if invalid, throw error and return, which should use previously saved data from config file
+	if (newData === false) {
+		log.error('SERVER', 'Invalid JSON received from server!');
+
+		return;
+	}
 
 	Object.keys(newData).forEach(function(key) {
 	    if (typeof newData[key] !== 'undefined') {
@@ -446,3 +454,20 @@ function outputZerosToAllChannels() {
 		AttitudeDMX.set(4, i, 0);
 	}
 }
+
+function tryParseJSONObject(jsonString) {
+    try {
+        var o = JSON.parse(jsonString);
+
+        // Handle non-exception-throwing cases:
+        // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+        // but... JSON.parse(null) returns null, and typeof null === "object", 
+        // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+        if (o && typeof o === "object") {
+            return o;
+        }
+    }
+    catch (e) { }
+
+    return false;
+};
